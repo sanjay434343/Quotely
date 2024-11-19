@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quotely</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=book_4_spark,refresh" />
+    <style>
+         :root {
+            --primary: #2D7FF9;
+            --secondary: #18A9E2;
+            --background: #ffffff;
+            --text: #0A2540;
+            --card: #ffffff;
+            --accent: #E2E8F0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--background);
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(128, 219, 255, 0.827) 0%, transparent 40%),
+                radial-gradient(circle at 80% 90%, rgba(249, 239, 45, 0.848) 0%, transparent 50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden; /* Prevent scroll if unnecessary */
+        }
+        
+        .quote-card {
+            width: 100%;
+            height: 100vh; /* Make it cover the full height of the viewport */
+            max-width: none; /* Remove max-width constraint */
+            background: #ffffff6d;
+            border-radius: 0; /* Remove border-radius for a fullscreen effect */
+            padding: 40px;
+            box-shadow: none; /* Remove box-shadow if not required for fullscreen */
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+
+        .ai-orb {
+            width: 160px;
+            height: 160px;
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            opacity: 0.1;
+            filter: blur(40px);
+            animation: pulse 4s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.1; }
+            50% { transform: scale(1.2); opacity: 0.15; }
+        }
+
+        .quote-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            position: absolute;
+            top: 30px;
+        }
+
+        .ai-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+        }
+
+        .ai-icon span {
+            color: #fff;
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: white;
+            stroke-width: 2;
+        }
+
+        .header-text h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .header-text p {
+            font-size: 14px;
+            color: #64748B;
+        }
+
+        .quote-content {
+            position: relative;
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-bottom: 80px;
+        }
+
+        .quote-text {
+            font-weight: 700;
+            font-size: 20px;
+            line-height: 1.6;
+            color: var(--text);
+            margin-bottom: 16px;
+            position: relative;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            align-items: center;
+
+        }
+
+        .quote-author {
+            font-size: 16px;
+            color: #64748B;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-weight: 500;
+        }
+
+        .generate-btn {
+            margin-top: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 90%;
+            position: absolute;
+            bottom: 2px;
+            overflow: hidden;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(45, 127, 249, 0.2);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .loading-indicator {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .loading-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: dotPulse 1.4s infinite;
+        }
+
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dotPulse {
+            0%, 100% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+
+        .show-quote {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFade 2s ease-out forwards;
+        }
+
+        @keyframes particleFade {
+            0% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+
+        @media (max-width: 600px) {
+            .quote-card {
+                padding: 30px;
+            }
+
+            .quote-text {
+                font-size: 18px;
+            }
+
+            .header-text h1 {
+                font-size: 20px;
+            }
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 80px;
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            border: 2px solid #1ba2e6;
+            padding: 15px;
+            background-image: 
+            radial-gradient(circle at 20% 20%, rgba(128, 219, 255, 0.256) 0%, transparent 40%),
+            radial-gradient(circle at 80% 90%, rgba(249, 239, 45, 0.156) 0%, transparent 50%);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .prompt-input {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: 2px solid #1ba2e6;
+            background: white;
+            font-size: 16px;
+            color: var(--text);
+            transition: border-color 0.3s ease;
+        }
+
+        .prompt-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .prompt-input::placeholder {
+            color: #94A3B8;
+        }
+
+        .detected-theme {
+            font-size: 14px;
+            color: #64748B;
+            margin-top: -12px;
+            margin-left: 16px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            visibility: hidden;
+        }
+
+        .detected-theme.visible {
+            opacity: 1;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .generate-btn {
+            flex: 1;
+            margin: 0;
+            position: relative;
+        }
+
+        .regenerate-btn {
+            width: 48px;
+            height: 48px;
+            background: white;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .regenerate-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Rest of the previous styles remain the same */
+    </style>
+</head>
+<body>
+    <div class="quote-card">
+        <div class="ai-orb"></div>
+        <div class="particles"></div>
+        
+        <div class="quote-header">
+            <div class="ai-icon">
+                <span class="material-symbols-outlined">book_4_spark</span>
+            </div>
+            <div class="header-text">
+                <h1>Quotely</h1>
+                <p>Fueled by Advanced AI</p>
+            </div>
+        </div>
+
+        <div class="quote-content">
+            <div class="quote-text">Tell me what's on your mind, and I'll generate a relevant quote...</div>
+            <div class="quote-author"></div>
+        </div>
+
+        <div class="controls">
+            <input type="text" 
+                   class="prompt-input" 
+                   placeholder="Enter a topic, feeling, or situation (e.g., 'Starting a new job' or 'Feeling discouraged')"
+                   maxlength="100">
+            <div class="detected-theme"></div>
+            
+            <div class="button-container">
+                <button class="generate-btn">
+                    <div class="btn-content">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9a9 9 0 0 1-9-9m18 0a9 9 0 0 0-9-9m9 9H3" 
+                                stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Generate Quote
+                    </div>
+                    <div class="loading-indicator">
+                        <div class="loading-dots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                </button>
+                <button class="regenerate-btn" title="Generate another quote for the same topic">
+                    <span class="material-symbols-outlined">refresh</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quoteText = document.querySelector('.quote-text');
+        const quoteAuthor = document.querySelector('.quote-author');
+        const generateBtn = document.querySelector('.generate-btn');
+        const regenerateBtn = document.querySelector('.regenerate-btn');
+        const promptInput = document.querySelector('.prompt-input');
+        const detectedThemeEl = document.querySelector('.detected-theme');
+        const btnContent = document.querySelector('.btn-content');
+        const loadingIndicator = document.querySelector('.loading-indicator');
+        const particlesContainer = document.querySelector('.particles');
+        
+        let currentPrompt = '';
+        let isRequestInProgress = false;  // Flag to track if the request is in progress
+        let cache = {};  // Cache object to store previously generated quotes
+        
+        function createParticles() {
+            // Particle creation logic remains unchanged
+        }
+        
+        async function generateQuote(prompt = currentPrompt) {
+            try {
+                console.log("Generating quote for prompt:", prompt);  // Debugging log
+        
+                // Check if quote is already in cache
+                if (cache[prompt]) {
+                    displayQuote(cache[prompt]);
+                    return;
+                }
+        
+                // Prevent multiple simultaneous requests
+                if (isRequestInProgress) return;
+        
+                isRequestInProgress = true;
+        
+                // Hide previous content and show the loading state
+                btnContent.style.opacity = '0';
+                loadingIndicator.style.display = 'flex';
+                quoteText.classList.remove('show-quote');
+                quoteAuthor.classList.remove('show-quote');
+                detectedThemeEl.classList.remove('visible');
+        
+                // API call to generate quote
+                const response = await fetch('/api/generate-quote', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt })
+                });
+        
+                if (!response.ok) {
+                    throw new Error('Failed to fetch the quote');
+                }
+        
+                const data = await response.json();
+                console.log("Quote data received:", data);  // Debugging log
+        
+                const [quote, author] = data.quote.split(' - ').map(str => str.trim());
+        
+                // Store the generated quote in cache
+                cache[prompt] = { quote, author, theme: data.theme };
+        
+                loadingIndicator.style.display = 'none';
+                btnContent.style.opacity = '1';
+        
+                // Display the quote
+                displayQuote({ quote, author, theme: data.theme });
+        
+            } catch (error) {
+                console.error('Error:', error);
+                loadingIndicator.style.display = 'none';
+                btnContent.style.opacity = '1';
+                quoteText.textContent = 'An error occurred. Please try again.';
+                quoteText.classList.add('show-quote');
+            } finally {
+                isRequestInProgress = false;
+            }
+        }
+        
+        function displayQuote({ quote, author, theme }) {
+            quoteText.textContent = quote;
+            quoteAuthor.textContent = `- ${author || 'Unknown'}`;
+            detectedThemeEl.textContent = `Theme: ${theme.charAt(0).toUpperCase() + theme.slice(1)}`;
+            detectedThemeEl.classList.add('visible');
+        
+            // Show the quote and author with animation
+            quoteText.classList.add('show-quote');
+            quoteAuthor.classList.add('show-quote');
+        
+            // Create particles
+            createParticles();
+        }
+        
+        // Button click to generate the quote
+        generateBtn.addEventListener('click', () => {
+            const prompt = promptInput.value.trim();
+            if (prompt && !isRequestInProgress) {
+                generateQuote(prompt);
+            }
+        });
+        
+        // Regenerate quote on button click
+        regenerateBtn.addEventListener('click', () => {
+            if (currentPrompt && !isRequestInProgress) {
+                generateQuote(currentPrompt);
+            }
+        });
+        
+        // Handle Enter key in input
+        promptInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && promptInput.value.trim() && !isRequestInProgress) {
+                generateQuote(promptInput.value.trim());
+            }
+        });
+        
+    </script>
+</body>
+</html>

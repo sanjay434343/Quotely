@@ -1,0 +1,6 @@
+[build]
+  command = "npm run build"        # Build command (e.g., React, Vue, or other build tools)
+  publish = "build"                 # Directory to publish (e.g., "build", "dist")
+
+[functions]
+  directory = "netlify/functions"  # Directory containing serverless functions
