@@ -1,6 +1,3 @@
 [build]
-  command = "npm run build"        # Build command (e.g., React, Vue, or other build tools)
-  publish = "build"                 # Directory to publish (e.g., "build", "dist")
-
-[functions]
-  directory = "netlify/functions"  # Directory containing serverless functions
+  command = "npm run start"  # This should match the start script in your package.json
+  publish = "public"  # Ensure this is the directory where your static files are located
